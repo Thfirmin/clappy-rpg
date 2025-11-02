@@ -1,0 +1,39 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: packages/backend/Dockerfile
+    container_name: clappy-rpg-backend
+    ports:
+      - "3001:3001"
+    environment:
+      - DATABASE_URL=file:/app/data/dev.db
+      - PORT=3001
+      - NODE_ENV=production
+    volumes:
+      - backend-data:/app/data
+    networks:
+      - clappy-network
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: .
+      dockerfile: packages/frontend/Dockerfile
+    container_name: clappy-rpg-frontend
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    networks:
+      - clappy-network
+    restart: unless-stopped
+
+volumes:
+  backend-data:
+
+networks:
+  clappy-network:
+    driver: bridge
